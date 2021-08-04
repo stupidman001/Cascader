@@ -1,5 +1,6 @@
 <template>
   <ul class="select">
+    <li class="special"><input type="checkbox" @click="check($event,list)" /></li>
     <!-- 每一个小的项 -->
     <li v-for="(item, index) in list" :key="index">
       <!-- 点击每一项之后执行函数 -->
@@ -27,7 +28,7 @@
         class="children"
         v-show="item.isShowChild && item.children && item.children.length > 0"
       >
-        <Select :list="item.children" :resultArr="resultArr"></Select>
+        <Select :list="item.children" :resultArr="resultArr" :isSelect="isSelect"></Select>
       </div>
     </li>
   </ul>
@@ -38,15 +39,20 @@ import Select from "@/views/Select";
 
 export default {
   name: "Select",
+
   data() {
     return {
       isShowList: false,
+      arr:[],
     };
   },
+
   components: {
     Select,
   },
-  props: ["list", "resultArr"],
+
+  props: ["list", "resultArr","isSelect"],
+
   methods: {
     changeList(item) {
       // 点击每一个项
@@ -101,6 +107,43 @@ export default {
         }
       }
     },
+
+    // 多选框被选中
+    check(e,list) {
+      if(e.target.checked){
+        console.log(e.target.checked)
+        list.forEach((item) => {
+          if(item.children.length === 0 && this.judge(item)){
+            this.resultArr.push(item)
+          }else{
+            this.check(e,item.children)
+          }
+        })
+        console.log(this.resultArr)
+      }else{
+        console.log(e.target.checked)
+        for(let i = 0;i < this.resultArr.length;i++){
+          for(let j = 0;j < list.length;j++){
+            if(this.resultArr[i].id === list[j].id){
+              this.resultArr.splice(i,1)
+            }
+          }
+        }
+        console.log("删除数组中的元素")
+        console.log(this.resultArr)
+      } 
+    },
+
+    // 判断当前的数组中有没有这个元素
+    judge(element){
+      for(let i = 0;i < this.resultArr.length;i++){
+         if(element.id === this.resultArr[i].id){
+          return false
+        }
+      }
+      return true
+    }
+
   },
 };
 </script>
@@ -116,6 +159,7 @@ export default {
   border-radius: 0.2rem;
   overflow-y: auto;
 }
+
 .select li {
   position: relative;
   width: 10rem;
@@ -162,5 +206,19 @@ ul li:hover {
   border-radius: 10px;
   background: rgba(0, 0, 0, 0.1);
   box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.15);
+}
+// 多选框
+input {
+  height: 16px;
+  padding-top: 8px;
+  display: inline-block;
+}
+.special {
+  line-height: 32px;
+  height: 32px;
+  position:fixed;
+}
+.special:hover {
+  background-color: #fff;
 }
 </style>

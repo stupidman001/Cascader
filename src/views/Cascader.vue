@@ -8,8 +8,12 @@
     />
     <!-- 选择器 -->
     <div class="selectContent">
-      <Select :list="list" :resultArr="resultArr"></Select>
+      <Select :list="list" :resultArr="resultArr" :count="count"></Select>
     </div>
+
+    <button class="determine" @click="commit">确定</button>
+    <button class="cancel" @click="cancel">取消</button>
+
   </div>
 </template>
 
@@ -24,6 +28,7 @@ export default {
     return {
       inputContent: "",
       tempArr: [],
+      count:0
     };
   },
   created() {
@@ -46,7 +51,8 @@ export default {
       for (let i = 0; i < this.tempArr.length; i++) {
         if (
           this.tempArr[i].label == this.inputContent &&
-          this.judgment(this.inputContent)
+          this.judgment(this.inputContent) && 
+          this.tempArr[i].children == 0
         ) {
           this.tempArr[i].isShowChild = true;
           this.resultArr.push(this.tempArr[i]);
@@ -65,14 +71,28 @@ export default {
       }
       return true;
     },
+
+    commit(){
+      console.log("确定")
+      console.log(this.resultArr);
+    },
+
+    cancel(){
+      console.log("取消")
+
+    }
+
   },
 };
 </script>
 
 <style lang="less" scopd>
 #cascader {
+  position:relative;
+  height:250px;
   margin-left: 50px;
   margin-top: 50px;
+  
   input {
     width: 16rem;
     line-height: 1.8rem;
@@ -83,5 +103,15 @@ export default {
     margin-bottom: 5px;
     font-size: 15px;
   }
+}
+.determine{
+  position: absolute;
+  bottom:-20px;
+  left:162px;
+}
+.cancel{
+  position: absolute;
+  bottom:-20px;
+  left:206px;
 }
 </style>
